@@ -1,5 +1,5 @@
 # Add python code in this file
-import csv
+import pandas as pd
 class City:
     def __init__(self,city_dict):
         self.City_name = city_dict['Name'] 
@@ -24,31 +24,27 @@ class Point:
 
 
 def read_cities():
-    cities = []
-    with open('cities.csv') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            c = City(row)
-            cities.append(c)
-    return cities
+    cities_df = pd.read_csv('cities.csv')
+    return cities_df
 
 def read_points():
-    points= []
-    with open('points.csv') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:  
-            p= Point(row)
-            points.append(p)
-    return points
+    points_df = pd.read_csv('points.csv')
+    return points_df
 
 
 
 
 def main():
-    cities = read_cities()
-    points = read_points()
-    for p in points:
-        p.get_city(cities)
+    cities_df = read_cities()
+    points_df = read_points()
+    points_df['City'] = None
+    for index, row in points_df.iterrows():
+        cities_df_fitered = cities_df.query('TopLeft_X <= {} <= BottomRight_X and TopLeft_Y <= {}<=BottomRight_Y'.format(row['X'],row['Y']))
+        if cities_df_fitered.shape[0]:
+            #points_df['City'][index] = 
+            points_df.set_value(index,'City' ,cities_df_fitered.iloc[0]['Name'])
+            print(points_df.iloc[index]['City'])
+    print(points_df)
 
 
 
